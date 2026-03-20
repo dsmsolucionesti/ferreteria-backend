@@ -10,4 +10,5 @@ export class ActiveSysController {
       timestamp: new Date().toISOString(),
     };
   }
+  
 }
