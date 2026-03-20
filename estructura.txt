@@ -1,0 +1,75 @@
+creacion de proyecto
+npm init -y
+
+instalar dependencias
+- runtime: express, pg, dotenv
+    npm install express pg dotenv
+- development: typescript, ts-node-dev, @types/node, @types/express, @types/pg
+    npm install -D typescript ts-node-dev @types/node @types/express @types/pg
+    npm install routing-controllers reflect-metadata
+    npm install typedi
+
+configuracion typescript
+- npx tsc --init
+
+editar tsconfig.json
+- {
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "strict": true
+  }
+}
+
+crear directorios (ejemplos)
+- mkdir -p src/config
+- mkdir -p src/features/categorias
+
+crear archivo base
+- touch src/app.ts
+- touch src/server.ts
+
+ejemplo de arquitectura
+
+🌐 HTTP REQUEST
+              │
+              ▼
+┌────────────────────────────┐
+│     Controller (HTTP)      │
+│  categoria.controller.ts  │
+└────────────┬──────────────┘
+              │
+              ▼
+┌────────────────────────────┐
+│        Factory             │
+│ categoria.factory.ts       │
+│ (arma dependencias)        │
+└────────────┬──────────────┘
+              │
+              ▼
+┌────────────────────────────┐
+│         Service            │
+│ categoria.service.ts       │
+│ (lógica de negocio)        │
+└────────────┬──────────────┘
+              │
+              ▼
+┌────────────────────────────┐
+│        Interface           │
+│ CategoriaRepository        │
+│ (puerto / contrato)        │
+└────────────┬──────────────┘
+              │
+              ▼
+┌────────────────────────────┐
+│     Repository (Adapter)   │
+│ categoria.repository.ts    │
+│ (PostgreSQL / pg)          │
+└────────────┬──────────────┘
+              │
+              ▼
+      🗄️ PostgreSQL DB
+
