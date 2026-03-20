@@ -1,5 +1,5 @@
-import { pool } from "../config/database";
 import { PoolClient } from "pg";
+import { pool } from "../config/database";
 
 export class BaseRepository {
   protected async query<T>(
@@ -10,9 +10,7 @@ export class BaseRepository {
     const executor = client || pool;
 
     try {
-      // console.log("[DB QUERY]", text, params || []);
       const result = await executor.query(text, params);
-      // console.log('result', result.rows)
       return result.rows;
     } catch (error) {
       console.error("[DB ERROR]", error);
@@ -20,7 +18,49 @@ export class BaseRepository {
     }
   }
 
-  protected async getClient(): Promise<PoolClient> {
-    return await pool.connect();
+  protected async insertEntity<T>(table: string, data: Partial<T>): Promise<T[]> {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+
+    const columns = keys.join(", ");
+    const placeholders = keys.map((_, i) => `$${i + 1}`).join(", ");
+
+    const query = `
+      INSERT INTO ${table} (${columns})
+      VALUES (${placeholders})
+      RETURNING *
+    `;
+
+    return this.query<T>(query, values);
+  }
+
+  protected async updateEntity<T>(
+    table: string,
+    data: Partial<T>,
+    id: number,
+  ): Promise<T[]> {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+
+    const set = keys.map((k, i) => `${k} = $${i + 1}`).join(", ");
+
+    const query = `
+      UPDATE ${table}
+      SET ${set}
+      WHERE id = $${keys.length + 1}
+      RETURNING *
+    `;
+
+    return this.query<T>(query, [...values, id]);
+  }
+
+  protected async deleteEntity(table: string, id: number): Promise<any[]> {
+    const query = `
+      DELETE FROM ${table}
+      WHERE id = $1
+      RETURNING id
+    `;
+
+    return this.query(query, [id]);
   }
 }

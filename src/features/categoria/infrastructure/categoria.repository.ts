@@ -14,9 +14,12 @@ export class CategoriaRepository
   extends BaseRepository
   implements CategoriaRepositoryInterface
 {
+
+  private readonly tableName = "categorias";
+
   async findAll(): Promise<RespuestaProceso<Categoria[]>> {
     try {
-      const query = buildSelect("categorias");
+      const query = buildSelect(this.tableName);
       const result = await this.query<Categoria[]>(query.text);
 
       if (!result[0]) {
@@ -45,7 +48,7 @@ export class CategoriaRepository
 
   async findById(id: number): Promise<RespuestaProceso<Categoria>> {
     try {
-      const query = buildSelectWithFilters("categorias", "id", id);
+      const query = buildSelectWithFilters(this.tableName, "id", id);
       const result = await this.query<Categoria>(query.text);
 
       if (!result[0]) {
@@ -72,10 +75,9 @@ export class CategoriaRepository
     }
   }
 
-  async create(data: Partial<Categoria>): Promise<RespuestaProceso> {
+  async post(data: Partial<Categoria>): Promise<RespuestaProceso> {
     try {
-      const query = buildInsert("categorias", data);
-      const result = await this.query<Categoria>(query.text, query.values);
+      const result = await this.insertEntity(this.tableName, data);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -105,8 +107,7 @@ export class CategoriaRepository
     data: Partial<Categoria>,
   ): Promise<RespuestaProceso> {
     try {
-      const query = buildUpdate("categorias", data, id);
-      const result = await this.query<Categoria>(query.text, query.values);
+      const result = await this.updateEntity(this.tableName, data, id);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -133,8 +134,7 @@ export class CategoriaRepository
 
   async delete(id: number): Promise<RespuestaProceso> {
     try {
-      const query = buildDelete("categorias", "id", id);
-      const rows = await this.query<any>(query.text);
+      const rows = await this.deleteEntity(this.tableName, id);
 
       if (rows.length === 0) {
         return new RespuestaProceso({

@@ -15,8 +15,8 @@ export class CategoriaService {
     return await this._categoriaRepository.findById(id);
   }
 
-  async create(data: Partial<Categoria>): Promise<RespuestaProceso> {
-    return await this._categoriaRepository.create(data);
+  async post(data: Partial<Categoria>): Promise<RespuestaProceso> {
+    return await this._categoriaRepository.post(data);
   }
 
   async update(

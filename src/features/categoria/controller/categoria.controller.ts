@@ -32,7 +32,7 @@ export class CategoriaController {
   @Post("/")
   @HttpCode(201)
   async create(@Body() data: Partial<Categoria>): Promise<RespuestaProceso> {
-    return this.service.create(data);
+    return this.service.post(data);
   }
 
   @Patch("/:id")
