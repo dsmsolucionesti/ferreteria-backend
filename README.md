@@ -16,56 +16,14 @@ API backend desarrollada con **Node.js + TypeScript**, utilizando una arquitectu
 
 ## 📦 Instalación del proyecto
 
-### 1. Crear proyecto
+### 1. Instalar dependencias
 
 ```bash
-npm init -y
+npm install
 ```
-
 ---
 
-### 2. Instalar dependencias
-
-#### 🔹 Runtime
-
-```bash
-npm install express pg dotenv
-```
-
-#### 🔹 Desarrollo
-
-```bash
-npm install -D typescript ts-node-dev @types/node @types/express @types/pg
-npm install routing-controllers reflect-metadata
-npm install typedi
-```
-
----
-
-## ⚙️ Configuración TypeScript
-
-```bash
-npx tsc --init
-```
-
-Editar `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "strict": true
-  }
-}
-```
-
----
-
-## 📁 Estructura del proyecto
+## 📁 Estructura del proyecto (mantener)
 
 ```text
 src/
@@ -84,7 +42,7 @@ src/
 
 ---
 
-## 📂 Creación de directorios
+## 📂 Creación de directorios (ejemplo)
 
 ```bash
 mkdir -p src/config
@@ -96,8 +54,8 @@ mkdir -p src/features/categorias
 ## 📄 Archivos base
 
 ```bash
-touch src/app.ts
-touch src/server.ts
+src/app.ts
+src/server.ts
 ```
 
 ---
