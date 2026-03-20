@@ -34,42 +34,34 @@ crear archivo base
 
 ejemplo de arquitectura
 
-🌐 HTTP REQUEST
-              │
-              ▼
+      🌐HTTP REQUEST
+             │
+             ▼
 ┌────────────────────────────┐
 │     Controller (HTTP)      │
-│  categoria.controller.ts  │
+│ex: categoria.controller.ts │
 └────────────┬──────────────┘
-              │
-              ▼
-┌────────────────────────────┐
-│        Factory             │
-│ categoria.factory.ts       │
-│ (arma dependencias)        │
-└────────────┬──────────────┘
-              │
-              ▼
+             │
+             ▼
 ┌────────────────────────────┐
 │         Service            │
-│ categoria.service.ts       │
-│ (lógica de negocio)        │
+│ ex: categoria.service.ts   │
+│    (lógica de negocio)     │
 └────────────┬──────────────┘
-              │
-              ▼
+             │
+             ▼
 ┌────────────────────────────┐
 │        Interface           │
-│ CategoriaRepository        │
-│ (puerto / contrato)        │
+│   ex: CategoriaRepository  │
+│   (puerto / contrato)      │
 └────────────┬──────────────┘
-              │
-              ▼
+             │
+             ▼
 ┌────────────────────────────┐
 │     Repository (Adapter)   │
-│ categoria.repository.ts    │
-│ (PostgreSQL / pg)          │
+│ex: categoria.repository.ts │
+│     (PostgreSQL / pg)      │
 └────────────┬──────────────┘
-              │
-              ▼
+             │
+             ▼
       🗄️ PostgreSQL DB
-
