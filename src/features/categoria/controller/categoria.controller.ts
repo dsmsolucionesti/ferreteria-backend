@@ -11,33 +11,39 @@ import {
 } from "routing-controllers";
 import { buildCategoriaService } from "../categoria.factory";
 import { Categoria } from "../models/categoria.model";
+import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
 
 @JsonController("/categorias")
 export class CategoriaController {
   private service = buildCategoriaService();
 
   @Get("/")
-  async findAll() {
+  @HttpCode(200)
+  async findAll(): Promise<RespuestaProceso> {
     return this.service.findAll();
   }
 
   @Get("/:id")
-  async findById(@Param("id") id: number) {
+  @HttpCode(200)
+  async findById(@Param("id") id: number): Promise<RespuestaProceso> {
     return this.service.findById(id);
   }
 
   @Post("/")
-  async create(@Body() data: Partial<Categoria>) {
+  @HttpCode(201)
+  async create(@Body() data: Partial<Categoria>): Promise<RespuestaProceso> {
     return this.service.create(data);
   }
 
   @Patch("/:id")
-  async update(@Param("id") id: number, @Body() data: Partial<Categoria>) {
+  @HttpCode(200)
+  async update(@Param("id") id: number, @Body() data: Partial<Categoria>): Promise<RespuestaProceso> {
     return this.service.update(id, data);
   }
 
   @Delete("/:id")
-  async delete(@Param("id") id: number) {
+  @HttpCode(200)
+  async delete(@Param("id") id: number): Promise<RespuestaProceso> {
     return this.service.delete(id);
   }
 }

@@ -10,13 +10,13 @@ export class BaseRepository {
     const executor = client || pool;
 
     try {
-      console.log("[DB QUERY]", text, params || []);
+      // console.log("[DB QUERY]", text, params || []);
       const result = await executor.query(text, params);
-      console.log('result', result.rows)
+      // console.log('result', result.rows)
       return result.rows;
     } catch (error) {
       console.error("[DB ERROR]", error);
-      throw new Error("Database error");
+      throw error;
     }
   }
 
