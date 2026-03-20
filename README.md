@@ -1,36 +1,56 @@
-🛠️ Ferretería Backend
+# 🛠️ Ferretería Backend
 
-API backend desarrollada con Node.js + TypeScript, utilizando una arquitectura feature-driven + hexagonal parcial con soporte de decoradores (routing-controllers).
+API backend desarrollada con **Node.js + TypeScript**, utilizando una arquitectura **feature-driven + hexagonal parcial** con soporte de **decoradores (routing-controllers)**.
 
-🚀 Tecnologías utilizadas
+---
 
-Node.js
+## 🚀 Tecnologías utilizadas
 
-TypeScript
+* Node.js
+* TypeScript
+* routing-controllers
+* PostgreSQL (pg)
+* dotenv
 
-Express (routing-controllers)
+---
 
-PostgreSQL (pg)
+## 📦 Instalación del proyecto
 
-typedi (opcional / DI)
+### 1. Crear proyecto
 
-dotenv
-
-📦 Instalación del proyecto
-1. Crear proyecto
+```bash
 npm init -y
-2. Instalar dependencias
-🔹 Runtime
+```
+
+---
+
+### 2. Instalar dependencias
+
+#### 🔹 Runtime
+
+```bash
 npm install express pg dotenv
-🔹 Desarrollo
+```
+
+#### 🔹 Desarrollo
+
+```bash
 npm install -D typescript ts-node-dev @types/node @types/express @types/pg
 npm install routing-controllers reflect-metadata
 npm install typedi
-⚙️ Configuración TypeScript
+```
+
+---
+
+## ⚙️ Configuración TypeScript
+
+```bash
 npx tsc --init
+```
 
-Editar tsconfig.json:
+Editar `tsconfig.json`:
 
+```json
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -41,104 +61,127 @@ Editar tsconfig.json:
     "strict": true
   }
 }
-📁 Estructura de carpetas
+```
+
+---
+
+## 📁 Estructura del proyecto
+
+```text
 src/
 │── config/
 │── features/
 │   │── categoria/
-│   │   │── controller/
+│   │   │── interfaces/
 │   │   │── services/
 │   │   │── infrastructure/
-│   │   │── interfaces/
 │   │   │── models/
 │   │   │── categoria.factory.ts
 │
 │── app.ts
 │── server.ts
-📂 Creación de directorios
+```
+
+---
+
+## 📂 Creación de directorios
+
+```bash
 mkdir -p src/config
 mkdir -p src/features/categorias
-📄 Archivos base
+```
+
+---
+
+## 📄 Archivos base
+
+```bash
 touch src/app.ts
 touch src/server.ts
-🧱 Arquitectura del proyecto
+```
 
-Este proyecto sigue una arquitectura basada en:
+---
 
-Feature-driven
+## 🧱 Arquitectura
 
-Hexagonal (parcial)
+Este proyecto utiliza:
 
-Separación de responsabilidades
+* Feature-driven design
+* Arquitectura hexagonal (parcial)
+* Separación de responsabilidades
 
-🔄 Flujo de ejecución
-      🌐HTTP REQUEST
-             │
-             ▼
-┌────────────────────────────┐
-│     Controller (HTTP)      │
-│ex: categoria.controller.ts │
-└────────────┬──────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│         Service            │
-│ ex: categoria.service.ts   │
-│    (lógica de negocio)     │
-└────────────┬──────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│        Interface           │
-│   ex: CategoriaRepository  │
-│   (puerto / contrato)      │
-└────────────┬──────────────┘
-             │
-             ▼
-┌────────────────────────────┐
-│     Repository (Adapter)   │
-│ex: categoria.repository.ts │
-│     (PostgreSQL / pg)      │
-└────────────┬──────────────┘
-             │
-             ▼
-      🗄️ PostgreSQL DB
-      
-🧠 Conceptos clave
+---
 
-Controller: Maneja la entrada HTTP
+## 🔄 Flujo de ejecución
 
-Service: Contiene la lógica de negocio
+```text
+HTTP Request
+    ↓
+Controller
+    ↓
+Service
+    ↓
+Interface (Port)
+    ↓
+Repository (Adapter)
+    ↓
+Database (PostgreSQL)
+```
 
-Interface (Port): Define contratos
+---
 
-Repository (Adapter): Implementa acceso a datos
+## 🧱 Construcción de dependencias (Factory)
 
-Factory: Construye dependencias
+El factory se utiliza solo al iniciar la aplicación:
 
-▶️ Ejecutar proyecto
+```text
+Factory
+   ↓
+Repository
+   ↓
+Service
+   ↓
+Controller (usa el service)
+```
+
+---
+
+## ▶️ Ejecutar proyecto
+
+```bash
 npm run dev
-📌 Endpoints base
+```
+
+---
+
+## 📌 Endpoints base
+
+```text
 GET /api/health
 GET /api/categorias
-⚠️ Notas importantes
+```
 
-No se utiliza Express Router directamente (se usan decoradores)
+---
 
-No se usa DI container completo (inyección manual con factory)
+## ⚠️ Notas importantes
 
-Arquitectura pensada para escalar progresivamente
+* Se utilizan decoradores en lugar de Express Router
+* No se usa un contenedor de dependencias completo (DI manual con factory)
+* El factory NO forma parte del flujo de ejecución
+* Arquitectura pensada para escalar progresivamente
 
-🚀 Futuras mejoras
+---
 
-Validación con DTOs
+## 🚀 Futuras mejoras
 
-Manejo de errores global
+* Validación con DTOs
+* Manejo de errores global
+* Logging
+* Autenticación (JWT)
+* Dockerización
 
-Logging
+---
 
-Autenticación (JWT)
+## 👨‍💻 Autor
 
-Dockerización
-
-CI/CD
+Desarrollado por **Diego Muñoz Mauro** 🚀
