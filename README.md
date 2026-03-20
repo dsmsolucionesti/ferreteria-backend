@@ -157,7 +157,7 @@ npm run dev
 ## 📌 Endpoints base
 
 ```text
-GET /api/health
+GET /api/activesys
 GET /api/categorias
 ```
 
@@ -181,7 +181,3 @@ GET /api/categorias
 * Dockerización
 
 ---
-
-## 👨‍💻 Autor
-
-Desarrollado por **Diego Muñoz Mauro** 🚀
