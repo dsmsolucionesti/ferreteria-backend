@@ -18,7 +18,22 @@ export class BaseRepository {
     }
   }
 
-  protected async insertEntity<T>(table: string, data: Partial<T>): Promise<T[]> {
+  protected async selectEntity<T>(table: string): Promise<T[]> {
+    const query = `SELECT * FROM ${table}`;
+
+    return this.query<T>(query);
+  }
+ 
+  protected async selectEntityById<T>(table: string, id: number): Promise<T[]> {
+    const query = `SELECT * FROM ${table} WHERE id = $1`;
+
+    return this.query<T>(query, [id]);
+  }
+
+  protected async insertEntity<T>(
+    table: string,
+    data: Partial<T>,
+  ): Promise<T[]> {
     const keys = Object.keys(data);
     const values = Object.values(data);
 
