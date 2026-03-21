@@ -32,10 +32,14 @@ const spec = routingControllersToSpec(
       version: "1.0.0",
       description: "Documentación de la API",
     },
+    servers: [
+      {
+        url: "/api",
+      },
+    ],
   },
 );
 
-// 🔥 SWAGGER UI
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
 export default app;
