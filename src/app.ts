@@ -10,6 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import { ActiveSysController } from "./features/active-sys/active-sys.routes";
 import { CategoriaController } from "./features/categoria/controller/categoria.controller";
 import { ClienteController } from "./features/clientes/controller/cliente.controller";
+import { CotizacionController } from "./features/cotizacion/controller/cotizacion.controller";
 import { ProductoController } from "./features/producto/controller/producto.controller";
 import { UsuarioController } from "./features/usuario/controller/usuario.controller";
 
@@ -19,6 +20,7 @@ const app = createExpressServer({
     ActiveSysController,
     CategoriaController,
     ClienteController,
+    CotizacionController,
     ProductoController,
     UsuarioController,
   ],
