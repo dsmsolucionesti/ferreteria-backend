@@ -11,7 +11,21 @@ export class ProductoRepository
 
   async findAll(): Promise<RespuestaProceso<Producto[]>> {
     try {
-      const result = await this.selectEntity<Producto[]>(this.tableName);
+      const query = `
+      SELECT 
+        p.activo,
+        p.id,
+        p.nombre,
+        p.descripcion,
+        p.precio,
+        p.stock_actual,
+        c.id AS categoria_id,
+        c.nombre AS categoria_nombre
+      FROM productos p
+      LEFT JOIN categorias c ON c.id = p.id_categoria
+    `;
+
+      const result = await this.query<any>(query);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -22,16 +36,28 @@ export class ProductoRepository
         });
       }
 
+      const data = result.map((p) => {
+        const { categoria_id, categoria_nombre, ...producto } = p;
+
+        return {
+          ...producto,
+          categoria: {
+            id: categoria_id,
+            nombre: categoria_nombre,
+          },
+        };
+      });
+
       return new RespuestaProceso({
         idEstado: 0,
         dsEstado: "Ok",
-        totalRegistros: result.length,
-        datos: result,
+        totalRegistros: data.length,
+        datos: data,
       });
     } catch (error) {
       return new RespuestaProceso({
         idEstado: 1,
-        dsEstado: "Error ",
+        dsEstado: "Error",
         totalRegistros: 0,
         mensaje: error instanceof Error ? error.message : String(error),
       });
