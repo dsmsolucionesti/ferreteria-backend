@@ -4,20 +4,23 @@ import {
   getMetadataArgsStorage,
 } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
+
 import swaggerUi from "swagger-ui-express";
-import cors from "cors";
+
 import { ActiveSysController } from "./features/active-sys/active-sys.routes";
 import { CategoriaController } from "./features/categoria/controller/categoria.controller";
-import { UsuarioController } from "./features/usuario/controller/usuario.controller";
+import { ClienteController } from "./features/clientes/controller/cliente.controller";
 import { ProductoController } from "./features/producto/controller/producto.controller";
+import { UsuarioController } from "./features/usuario/controller/usuario.controller";
 
 const app = createExpressServer({
   routePrefix: "/api",
   controllers: [
     ActiveSysController,
     CategoriaController,
-    UsuarioController,
+    ClienteController,
     ProductoController,
+    UsuarioController,
   ],
   cors: {
     origin: "*",
@@ -44,6 +47,11 @@ const spec = routingControllersToSpec(
     ],
   },
 );
+
+app.get("/docs.json", (_req: any, res: any) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(spec);
+});
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
 
