@@ -19,10 +19,7 @@ export class ClienteService {
     return await this._clienteRepository.post(data);
   }
 
-  async update(
-    id: number,
-    data: Partial<Cliente>,
-  ): Promise<RespuestaProceso> {
+  async update(id: number, data: Partial<Cliente>): Promise<RespuestaProceso> {
     if (id === 0) {
       return this.crearRespuestaError("ID de cliente no válido");
     }

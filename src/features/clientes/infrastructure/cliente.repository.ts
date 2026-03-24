@@ -1,12 +1,7 @@
 import { Cliente } from "../models/cliente.model";
 import { ClienteRepositoryInterface } from "../interfaces/cliente.repository.interface";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
-
 import { BaseRepository } from "../../../shared/base.repository";
-import {
-  buildSelect,
-  buildSelectWithFilters,
-} from "../../../shared/query.builder";
 
 export class ClienteRepository
   extends BaseRepository
