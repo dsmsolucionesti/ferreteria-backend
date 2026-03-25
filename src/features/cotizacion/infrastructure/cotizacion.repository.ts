@@ -2,6 +2,7 @@ import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model
 import { BaseRepository } from "../../../shared/base.repository";
 import { CotizacionRepositoryInterface } from "../interfaces/cotizacion.repository.interface";
 import { Cotizacion } from "../models/cotizacion.model";
+import { PoolClient } from "pg";
 
 export class CotizacionRepository
   extends BaseRepository
@@ -9,9 +10,9 @@ export class CotizacionRepository
 {
   private readonly tableName = "cotizaciones";
 
-  async findAll(): Promise<RespuestaProceso<Cotizacion[]>> {
+  async findAll(client?: PoolClient): Promise<RespuestaProceso<Cotizacion[]>> {
     try {
-      const result = await this.selectEntity<Cotizacion>(this.tableName);
+      const result = await this.selectEntity<Cotizacion>(this.tableName, client);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -37,9 +38,16 @@ export class CotizacionRepository
     }
   }
 
-  async findById(id: number): Promise<RespuestaProceso<Cotizacion>> {
+  async findById(
+    id: number,
+    client?: PoolClient,
+  ): Promise<RespuestaProceso<Cotizacion>> {
     try {
-      const result = await this.selectEntityById<Cotizacion>(this.tableName, id);
+      const result = await this.selectEntityById<Cotizacion>(
+        this.tableName,
+        id,
+        client,
+      );
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -65,9 +73,12 @@ export class CotizacionRepository
     }
   }
 
-  async post(data: Partial<Cotizacion>): Promise<RespuestaProceso> {
+  async post(
+    data: Partial<Cotizacion>,
+    client?: PoolClient,
+  ): Promise<RespuestaProceso> {
     try {
-      const result = await this.insertEntity(this.tableName, data);
+      const result = await this.insertEntity(this.tableName, data, client);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -92,9 +103,13 @@ export class CotizacionRepository
     }
   }
 
-  async update(id: number, data: Partial<Cotizacion>): Promise<RespuestaProceso> {
+  async update(
+    id: number,
+    data: Partial<Cotizacion>,
+    client?: PoolClient,
+  ): Promise<RespuestaProceso> {
     try {
-      const result = await this.updateEntity(this.tableName, data, id);
+      const result = await this.updateEntity(this.tableName, data, id, client);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -119,9 +134,9 @@ export class CotizacionRepository
     }
   }
 
-  async delete(id: number): Promise<RespuestaProceso> {
+  async delete(id: number, client?: PoolClient): Promise<RespuestaProceso> {
     try {
-      const rows = await this.deleteEntity(this.tableName, id);
+      const rows = await this.deleteEntity(this.tableName, id, client);
 
       if (rows.length === 0) {
         return new RespuestaProceso({

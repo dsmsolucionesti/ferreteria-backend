@@ -18,21 +18,28 @@ export class BaseRepository {
     }
   }
 
-  protected async selectEntity<T>(table: string): Promise<T[]> {
+  protected async selectEntity<T>(
+    table: string,
+    client?: PoolClient,
+  ): Promise<T[]> {
     const query = `SELECT * FROM ${table}`;
-
-    return this.query<T>(query);
+    return this.query<T>(query, undefined, client);
   }
- 
-  protected async selectEntityById<T>(table: string, id: number): Promise<T[]> {
+
+  protected async selectEntityById<T>(
+    table: string,
+    id: number,
+    client?: PoolClient,
+  ): Promise<T[]> {
     const query = `SELECT * FROM ${table} WHERE id = $1`;
 
-    return this.query<T>(query, [id]);
+    return this.query<T>(query, [id], client);
   }
 
   protected async insertEntity<T>(
     table: string,
     data: Partial<T>,
+    client?: PoolClient,
   ): Promise<T[]> {
     const keys = Object.keys(data);
     const values = Object.values(data);
@@ -41,18 +48,19 @@ export class BaseRepository {
     const placeholders = keys.map((_, i) => `$${i + 1}`).join(", ");
 
     const query = `
-      INSERT INTO ${table} (${columns})
-      VALUES (${placeholders})
-      RETURNING *
-    `;
+    INSERT INTO ${table} (${columns})
+    VALUES (${placeholders})
+    RETURNING *
+  `;
 
-    return this.query<T>(query, values);
+    return this.query<T>(query, values, client);
   }
 
   protected async updateEntity<T>(
     table: string,
     data: Partial<T>,
     id: number,
+    client?: PoolClient,
   ): Promise<T[]> {
     const keys = Object.keys(data);
     const values = Object.values(data);
@@ -66,16 +74,20 @@ export class BaseRepository {
       RETURNING *
     `;
 
-    return this.query<T>(query, [...values, id]);
+    return this.query<T>(query, [...values, id], client);
   }
 
-  protected async deleteEntity(table: string, id: number): Promise<any[]> {
+  protected async deleteEntity(
+    table: string,
+    id: number,
+    client?: PoolClient,
+  ): Promise<any[]> {
     const query = `
       DELETE FROM ${table}
       WHERE id = $1
       RETURNING id
     `;
 
-    return this.query(query, [id]);
+    return this.query(query, [id], client);
   }
 }

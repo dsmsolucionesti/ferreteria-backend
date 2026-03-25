@@ -1,6 +1,8 @@
 import { CotizacionRepositoryInterface } from "../interfaces/cotizacion.repository.interface";
 import { Cotizacion } from "../models/cotizacion.model";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
+import { pool } from "../../../config/database";
+import { executeInTransaction } from "../../../shared/helper/execute-in-transaction.helper";
 
 export class CotizacionService {
   constructor(
@@ -16,10 +18,29 @@ export class CotizacionService {
   }
 
   async post(data: Partial<Cotizacion>): Promise<RespuestaProceso> {
-    return await this._cotizacionRepository.post(data);
+    try {
+      return await executeInTransaction(async (client) => {
+        const result = await this._cotizacionRepository.post(data, client);
+
+        if (result.idEstado !== 0) {
+          throw new Error("Error al crear cotización");
+        }
+
+        return result;
+      });
+    } catch (error) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "Error",
+        mensaje: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 
-  async update(id: number, data: Partial<Cotizacion>): Promise<RespuestaProceso> {
+  async update(
+    id: number,
+    data: Partial<Cotizacion>,
+  ): Promise<RespuestaProceso> {
     if (id === 0) {
       return this.crearRespuestaError("ID de cotización no válido");
     }
