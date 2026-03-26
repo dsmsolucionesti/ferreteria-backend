@@ -12,7 +12,24 @@ export class CotizacionRepository
 
   async findAll(client?: PoolClient): Promise<RespuestaProceso<Cotizacion[]>> {
     try {
-      const result = await this.selectEntity<Cotizacion>(this.tableName, client);
+      const query = `
+      SELECT 
+        c.id,
+        c.fecha,
+        c.total,
+        cl.id as cliente_id,
+        cl.nombre as cliente_nombre,
+        u.id as usuario_id,
+        u.nombre as usuario_nombre,
+        ec.id as estado_cotizacion_id,
+        ec.nombre as estado_cotizacion_nombre
+      FROM cotizaciones c
+      LEFT JOIN clientes cl ON c.id_cliente = cl.id 
+      LEFT JOIN usuarios u on c.id_usuario = u.id 
+      LEFT JOIN estados_cotizacion ec on c.id_estado = ec.id
+    `;
+
+      const result = await this.query<any>(query);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -23,11 +40,31 @@ export class CotizacionRepository
         });
       }
 
+      const data = result.map((p) => {
+        const { cliente_id, cliente_nombre, usuario_id, usuario_nombre, estado_cotizacion_id, estado_cotizacion_nombre, ...cotizacion } = p;
+
+        return {
+          ...cotizacion,
+          cliente: {
+            id: cliente_id,
+            nombre: cliente_nombre,
+          },
+          usuario: {
+            id: usuario_id,
+            nombre: usuario_nombre,
+          },
+          estadoCotizacion: {
+            id: estado_cotizacion_id,
+            nombre: estado_cotizacion_nombre,
+          },
+        };
+      });
+
       return new RespuestaProceso<Cotizacion[]>({
         idEstado: 0,
         dsEstado: "OK",
-        totalRegistros: result.length,
-        datos: [result],
+        totalRegistros: data.length,
+        datos: data,
       });
     } catch (error) {
       return new RespuestaProceso({
