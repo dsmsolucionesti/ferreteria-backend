@@ -1,7 +1,7 @@
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
 import { BaseRepository } from "../../../shared/base.repository";
 import { DetalleCotizacionRepositoryInterface } from "../interfaces/detalle-cotizacion.repository.interface";
-import { Cotizacion } from "../models/detalle-cotizacion.model";
+import { DetalleCotizacion } from "../models/detalle-cotizacion.model";
 import { PoolClient } from "pg";
 
 export class DetalleCotizacionRepository
@@ -10,7 +10,7 @@ export class DetalleCotizacionRepository
 {
   private readonly tableName = "cotizaciones";
 
-  async findAll(client?: PoolClient): Promise<RespuestaProceso<Cotizacion[]>> {
+  async findAll(client?: PoolClient): Promise<RespuestaProceso<DetalleCotizacion[]>> {
     try {
       const query = `
       SELECT 
@@ -68,7 +68,7 @@ export class DetalleCotizacionRepository
         };
       });
 
-      return new RespuestaProceso<Cotizacion[]>({
+      return new RespuestaProceso<DetalleCotizacion[]>({
         idEstado: 0,
         dsEstado: "OK",
         totalRegistros: data.length,
@@ -86,9 +86,9 @@ export class DetalleCotizacionRepository
   async findById(
     id: number,
     client?: PoolClient,
-  ): Promise<RespuestaProceso<Cotizacion>> {
+  ): Promise<RespuestaProceso<DetalleCotizacion>> {
     try {
-      const result = await this.selectEntityById<Cotizacion>(
+      const result = await this.selectEntityById<DetalleCotizacion>(
         this.tableName,
         id,
         client,
@@ -119,7 +119,7 @@ export class DetalleCotizacionRepository
   }
 
   async post(
-    data: Partial<Cotizacion>,
+    data: Partial<DetalleCotizacion>,
     client?: PoolClient,
   ): Promise<RespuestaProceso> {
     try {
@@ -150,7 +150,7 @@ export class DetalleCotizacionRepository
 
   async update(
     id: number,
-    data: Partial<Cotizacion>,
+    data: Partial<DetalleCotizacion>,
     client?: PoolClient,
   ): Promise<RespuestaProceso> {
     try {

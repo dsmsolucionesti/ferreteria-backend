@@ -1,8 +1,11 @@
-export interface Cotizacion {
+import { Cotizacion } from "../../cotizacion/models/cotizacion.model";
+import { Producto } from "../../producto/model/producto.model";
+
+export interface DetalleCotizacion {
   id: number;
-  idCliente: number;
-  idUsuario: number;
-  fecha: Date;
-  total: number;
-  idEstado: number;
+  idCotizacion: Cotizacion;
+  idProducto: Producto;
+  cantidad: number;
+  precioUnitario: number;
+  subtotal: number;
 }

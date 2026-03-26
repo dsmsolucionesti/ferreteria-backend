@@ -1,4 +1,4 @@
-import { Cotizacion } from "../models/detalle-cotizacion.model";
+import { DetalleCotizacion } from "../models/detalle-cotizacion.model";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
 import { executeInTransaction } from "../../../shared/helper/execute-in-transaction.helper";
 import { DetalleCotizacionRepositoryInterface } from "../interfaces/detalle-cotizacion.repository.interface";
@@ -16,7 +16,7 @@ export class DetalleCotizacionService {
     return await this._detalleCotizacionRepository.findById(id);
   }
 
-  async post(data: Partial<Cotizacion>): Promise<RespuestaProceso> {
+  async post(data: Partial<DetalleCotizacion>): Promise<RespuestaProceso> {
     try {
       return await executeInTransaction(async (client) => {
         const result = await this._detalleCotizacionRepository.post(data, client);
@@ -38,7 +38,7 @@ export class DetalleCotizacionService {
 
   async update(
     id: number,
-    data: Partial<Cotizacion>,
+    data: Partial<DetalleCotizacion>,
   ): Promise<RespuestaProceso> {
     if (id === 0) {
       return this.crearRespuestaError("ID de cotización no válido");

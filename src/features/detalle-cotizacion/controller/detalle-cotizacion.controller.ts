@@ -8,7 +8,7 @@ import {
   Patch,
   HttpCode,
 } from "routing-controllers";
-import { Cotizacion } from "../models/detalle-cotizacion.model";
+import { DetalleCotizacion } from "../models/detalle-cotizacion.model";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
 import { buildDetalleCotizacionService } from "../detalle-cotizacion.factory";
 
@@ -30,7 +30,7 @@ export class DetalleCotizacionController {
 
   @Post("/")
   @HttpCode(201)
-  async create(@Body() data: Partial<Cotizacion>): Promise<RespuestaProceso> {
+  async create(@Body() data: Partial<DetalleCotizacion>): Promise<RespuestaProceso> {
     return this.service.post(data);
   }
 
@@ -38,7 +38,7 @@ export class DetalleCotizacionController {
   @HttpCode(200)
   async update(
     @Param("id") id: number,
-    @Body() data: Partial<Cotizacion>,
+    @Body() data: Partial<DetalleCotizacion>,
   ): Promise<RespuestaProceso> {
     return this.service.update(id, data);
   }
