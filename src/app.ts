@@ -13,6 +13,7 @@ import { ClienteController } from "./features/clientes/controller/cliente.contro
 import { CotizacionController } from "./features/cotizacion/controller/cotizacion.controller";
 import { ProductoController } from "./features/producto/controller/producto.controller";
 import { UsuarioController } from "./features/usuario/controller/usuario.controller";
+import { DetalleCotizacionController } from "./features/detalle-cotizacion/controller/detalle-cotizacion.controller";
 
 const app = createExpressServer({
   routePrefix: "/api",
@@ -21,6 +22,7 @@ const app = createExpressServer({
     CategoriaController,
     ClienteController,
     CotizacionController,
+    DetalleCotizacionController,
     ProductoController,
     UsuarioController,
   ],
