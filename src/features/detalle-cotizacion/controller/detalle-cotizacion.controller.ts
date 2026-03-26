@@ -30,7 +30,7 @@ export class DetalleCotizacionController {
 
   @Post("/")
   @HttpCode(201)
-  async create(@Body() data: Partial<DetalleCotizacion>): Promise<RespuestaProceso> {
+  async create(@Body() data: Partial<DetalleCotizacion> | Partial<DetalleCotizacion>[]): Promise<RespuestaProceso> {
     return this.service.post(data);
   }
 

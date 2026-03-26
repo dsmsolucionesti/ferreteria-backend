@@ -1,10 +1,13 @@
 import { CotizacionRepositoryInterface } from "../interfaces/cotizacion.repository.interface";
 import { Cotizacion } from "../models/cotizacion.model";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
-import { pool } from "../../../config/database";
 import { executeInTransaction } from "../../../shared/helper/execute-in-transaction.helper";
+import { CotizacionRequest } from "../models/cotizacion-request.model";
+import { DetalleCotizacionRepository } from "../../detalle-cotizacion/infrastructure/detalle-cotizacion.repository";
 
 export class CotizacionService {
+  private _detalleCotizacionRepository = new DetalleCotizacionRepository();
+
   constructor(
     private readonly _cotizacionRepository: CotizacionRepositoryInterface,
   ) {}
@@ -17,14 +20,54 @@ export class CotizacionService {
     return await this._cotizacionRepository.findById(id);
   }
 
-  async post(data: Partial<Cotizacion>): Promise<RespuestaProceso> {
+  async post(data: Partial<CotizacionRequest>): Promise<RespuestaProceso> {
     try {
       return await executeInTransaction(async (client) => {
-        const result = await this._cotizacionRepository.post(data, client);
+        const cabecera = {
+          id_cliente: data.idCliente!,
+          id_usuario: data.isUsuario!,
+          total: 0,
+        };
+
+        const result = await this._cotizacionRepository.post(
+          cabecera as any,
+          client,
+        );
 
         if (result.idEstado !== 0) {
           throw new Error("Error al crear cotización");
         }
+
+        const cotizacionId = result.datos?.[0].id;
+        let total = 0;
+
+        for (const det of data.cotizacionDetalle || []) {
+          const productoId = det.idProducto.id;
+          const precio = det.precioUnitario;
+
+          if (!productoId || !precio) {
+            throw new Error("Detalle inválido");
+          }
+
+          const subtotal = det.cantidad * precio;
+          total += subtotal;
+
+          await this._detalleCotizacionRepository.post(
+            {
+              idCotizacion: cotizacionId,
+              idProducto: productoId,
+              cantidad: det.cantidad,
+              precioUnitario: precio,
+              subtotal,
+            },
+            client,
+          );
+        }
+        await this._cotizacionRepository.update(
+          cotizacionId,
+          { total },
+          client,
+        );
 
         return result;
       });

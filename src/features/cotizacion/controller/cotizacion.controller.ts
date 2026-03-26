@@ -11,6 +11,7 @@ import {
 import { Cotizacion } from "../models/cotizacion.model";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
 import { buildCotizacionService } from "../cotizacion.factory";
+import { CotizacionRequest } from "../models/cotizacion-request.model";
 
 @JsonController("/cotizaciones")
 export class CotizacionController {
@@ -30,7 +31,7 @@ export class CotizacionController {
 
   @Post("/")
   @HttpCode(201)
-  async create(@Body() data: Partial<Cotizacion>): Promise<RespuestaProceso> {
+  async create(@Body() data: Partial<CotizacionRequest>): Promise<RespuestaProceso> {
     return this.service.post(data);
   }
 

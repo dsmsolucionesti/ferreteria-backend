@@ -16,13 +16,13 @@ export class DetalleCotizacionService {
     return await this._detalleCotizacionRepository.findById(id);
   }
 
-  async post(data: Partial<DetalleCotizacion>): Promise<RespuestaProceso> {
+  async post(data: Partial<DetalleCotizacion> | Partial<DetalleCotizacion>[]): Promise<RespuestaProceso> {
     try {
       return await executeInTransaction(async (client) => {
         const result = await this._detalleCotizacionRepository.post(data, client);
 
         if (result.idEstado !== 0) {
-          throw new Error("Error al crear cotización");
+          throw new Error("Error al crear detalle de cotización");
         }
 
         return result;

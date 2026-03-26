@@ -8,25 +8,27 @@ export class DetalleCotizacionRepository
   extends BaseRepository
   implements DetalleCotizacionRepositoryInterface
 {
-  private readonly tableName = "cotizaciones";
+  private readonly tableName = "cotizacion_detalle";
 
-  async findAll(client?: PoolClient): Promise<RespuestaProceso<DetalleCotizacion[]>> {
+  async findAll(
+    client?: PoolClient,
+  ): Promise<RespuestaProceso<DetalleCotizacion[]>> {
     try {
       const query = `
       SELECT 
-        c.id,
-        c.fecha,
-        c.total,
-        cl.id as cliente_id,
-        cl.nombre as cliente_nombre,
-        u.id as usuario_id,
-        u.nombre as usuario_nombre,
-        ec.id as estado_cotizacion_id,
-        ec.nombre as estado_cotizacion_nombre
-      FROM cotizaciones c
-      LEFT JOIN clientes cl ON c.id_cliente = cl.id 
-      LEFT JOIN usuarios u on c.id_usuario = u.id 
-      LEFT JOIN estados_cotizacion ec on c.id_estado = ec.id
+        cd.id,
+        cd.id_cotizacion,
+        cd.id_producto,
+        p.id as producto_id,
+        p.nombre as producto_nombre,
+        p.precio as producto_precio,
+        cd.cantidad,
+        cd.precio_unitario,
+        cd.subtotal
+      FROM cotizacion_detalle cd
+      LEFT JOIN cotizaciones c ON cd.id_cotizacion = c.id
+      LEFT JOIN productos p ON cd.id_producto = p.id
+
     `;
 
       const result = await this.query<any>(query);
@@ -42,28 +44,18 @@ export class DetalleCotizacionRepository
 
       const data = result.map((p) => {
         const {
-          cliente_id,
-          cliente_nombre,
-          usuario_id,
-          usuario_nombre,
-          estado_cotizacion_id,
-          estado_cotizacion_nombre,
-          ...cotizacion
+          producto_id,
+          producto_nombre,
+          producto_precio,
+          ...detalleCotizacion
         } = p;
 
         return {
-          ...cotizacion,
-          cliente: {
-            id: cliente_id,
-            nombre: cliente_nombre,
-          },
-          usuario: {
-            id: usuario_id,
-            nombre: usuario_nombre,
-          },
-          estadoCotizacion: {
-            id: estado_cotizacion_id,
-            nombre: estado_cotizacion_nombre,
+          ...detalleCotizacion,
+          producto: {
+            id: producto_id,
+            nombre: producto_nombre,
+            precio: producto_precio,
           },
         };
       });
@@ -119,13 +111,34 @@ export class DetalleCotizacionRepository
   }
 
   async post(
-    data: Partial<DetalleCotizacion>,
+    data: Partial<DetalleCotizacion> | Partial<DetalleCotizacion>[],
     client?: PoolClient,
   ): Promise<RespuestaProceso> {
     try {
-      const result = await this.insertEntity(this.tableName, data, client);
+      const dataArray = Array.isArray(data) ? data : [data];
 
-      if (!result[0]) {
+      const results = [];
+
+      for (const item of dataArray) {
+        const mapData = {
+          id_cotizacion: item.idCotizacion,
+          id_producto: item.idProducto,
+          cantidad: item.cantidad,
+          precio_unitario: item.precioUnitario,
+          subtotal: item.subtotal,
+        };
+        const result = await this.insertEntity(
+          this.tableName,
+          mapData as any,
+          client,
+        );
+
+        if (result[0]) {
+          results.push(result[0]);
+        }
+      }
+
+      if (results.length === 0) {
         return new RespuestaProceso({
           idEstado: 1,
           dsEstado: "Sin registros",
@@ -137,7 +150,8 @@ export class DetalleCotizacionRepository
       return new RespuestaProceso({
         idEstado: 0,
         dsEstado: "OK",
-        datos: [result[0]],
+        totalRegistros: results.length,
+        datos: results,
       });
     } catch (error) {
       return new RespuestaProceso({

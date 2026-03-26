@@ -3,6 +3,7 @@ import { BaseRepository } from "../../../shared/base.repository";
 import { CotizacionRepositoryInterface } from "../interfaces/cotizacion.repository.interface";
 import { Cotizacion } from "../models/cotizacion.model";
 import { PoolClient } from "pg";
+import { CotizacionRequest } from "../models/cotizacion-request.model";
 
 export class CotizacionRepository
   extends BaseRepository
@@ -111,7 +112,7 @@ export class CotizacionRepository
   }
 
   async post(
-    data: Partial<Cotizacion>,
+    data: Partial<CotizacionRequest>,
     client?: PoolClient,
   ): Promise<RespuestaProceso> {
     try {
