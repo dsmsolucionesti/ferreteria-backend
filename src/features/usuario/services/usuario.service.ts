@@ -2,6 +2,7 @@ import { UsuarioRepositoryInterface } from "../interfaces/usuario.repository.int
 import { Usuario } from "../models/usuario.model";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
 import { Cliente } from "../../clientes/models/cliente.model";
+import { hashPassword } from "../../../shared/helper/auth.helper";
 
 export class UsuarioService {
   constructor(
@@ -24,7 +25,23 @@ export class UsuarioService {
     if (id === 0) {
       return this.crearRespuestaError("ID de usuario no válido");
     }
-    return await this._usuarioRepository.update(id, data);
+
+    const usuario = await this._usuarioRepository.findById(id);
+
+    if (!usuario || !usuario.datos || usuario.datos.length === 0) {
+      return this.crearRespuestaError("Usuario no encontrado");
+    }
+
+    const usuarioData = usuario.datos[0]!;
+
+    usuarioData.nombre = data.nombre ?? usuarioData.nombre;
+    usuarioData.email = data.email ?? usuarioData.email;
+
+    if (data.password && data.password.trim() !== "") {
+      usuarioData.password = await hashPassword(data.password);
+    }
+
+    return await this._usuarioRepository.update(id, usuarioData);
   }
 
   async delete(id: number): Promise<RespuestaProceso> {
