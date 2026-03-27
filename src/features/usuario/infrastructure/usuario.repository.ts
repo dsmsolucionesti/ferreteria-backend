@@ -11,7 +11,7 @@ export class UsuarioRepository
 
   async findAll(): Promise<RespuestaProceso<Usuario[]>> {
     try {
-      const result = await this.selectEntity<Usuario>(this.tableName);
+      const result = await this.selectEntity<Usuario[]>(this.tableName);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -26,7 +26,7 @@ export class UsuarioRepository
         idEstado: 0,
         dsEstado: "OK",
         totalRegistros: result.length,
-        datos: [result],
+        datos: result,
       });
     } catch (error) {
       return new RespuestaProceso({
