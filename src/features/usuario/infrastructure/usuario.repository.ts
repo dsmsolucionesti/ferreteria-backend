@@ -1,4 +1,3 @@
-import { pool } from "../../../config/database";
 import { Usuario } from "../models/usuario.model";
 import { UsuarioRepositoryInterface } from "../interfaces/usuario.repository.interface";
 import { BaseRepository } from "../../../shared/base.repository";
@@ -145,6 +144,23 @@ export class UsuarioRepository
         dsEstado: "Error",
         mensaje: error instanceof Error ? error.message : String(error),
       });
+    }
+  }
+
+  async findByEmail(email: string): Promise<Usuario | null> {
+    try {
+      const query = `SELECT * FROM ${this.tableName} WHERE email = '${email}'`;
+      console.log({ query });
+      const result = await this.query<any>(query);
+      console.log({ result });
+
+      if (!result[0]) {
+        return null;
+      }
+
+      return result[0];
+    } catch (error) {
+      throw error;
     }
   }
 }

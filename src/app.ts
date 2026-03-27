@@ -14,10 +14,12 @@ import { CotizacionController } from "./features/cotizacion/controller/cotizacio
 import { ProductoController } from "./features/producto/controller/producto.controller";
 import { UsuarioController } from "./features/usuario/controller/usuario.controller";
 import { DetalleCotizacionController } from "./features/detalle-cotizacion/controller/detalle-cotizacion.controller";
+import { AuthController } from "./features/auth/controller/auth.controller";
 
 const app = createExpressServer({
   routePrefix: "/api",
   controllers: [
+    AuthController,
     ActiveSysController,
     CategoriaController,
     ClienteController,
