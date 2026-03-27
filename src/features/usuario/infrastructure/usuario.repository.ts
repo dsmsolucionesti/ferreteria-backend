@@ -150,9 +150,7 @@ export class UsuarioRepository
   async findByEmail(email: string): Promise<Usuario | null> {
     try {
       const query = `SELECT * FROM ${this.tableName} WHERE email = '${email}'`;
-      console.log({ query });
       const result = await this.query<any>(query);
-      console.log({ result });
 
       if (!result[0]) {
         return null;
