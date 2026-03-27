@@ -17,7 +17,11 @@ export class UsuarioService {
     return await this._usuarioRepository.findById(id);
   }
 
-  async post(data: Partial<Cliente>): Promise<RespuestaProceso> {
+  async post(data: Partial<Usuario>): Promise<RespuestaProceso> {
+    if (data.password && data.password.trim() !== "") {
+      data.password = await hashPassword(data.password);
+    }
+    
     return await this._usuarioRepository.post(data);
   }
 
