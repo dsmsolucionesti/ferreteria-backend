@@ -1,17 +1,36 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-const SECRET = "DSM_SOLUCIONES_TI";
+dotenv.config();
 
-export const generarToken = (usuario: any) => {
-  return jwt.sign(
-    {
-      id: usuario.id,
-      email: usuario.email,
-    },
-    SECRET,
-    { expiresIn: "2h" },
-  );
+const SECRET = process.env.SECRET_KEY as string;
+
+interface JwtPayload {
+  id: number;
+  email: string;
+  nombre: string;
+  rol: string;
+}
+
+export const generarToken = (usuario: JwtPayload): string => {
+  return jwt.sign(usuario, SECRET, {
+    expiresIn: "2h",
+    issuer: "DSM_SOLUCIONES",
+  });
+};
+
+export const verificarToken = (token: string): JwtPayload => {
+  try {
+    return jwt.verify(token, SECRET, {
+      issuer: "DSM_SOLUCIONES",
+    }) as JwtPayload;
+  } catch (error: any) {
+    if (error.name === "TokenExpiredError") {
+      throw new Error("Token expirado");
+    }
+    throw new Error("Token inválido");
+  }
 };
 
 export const hashPassword = async (password: string) => {

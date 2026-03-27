@@ -16,6 +16,8 @@ import { UsuarioController } from "./features/usuario/controller/usuario.control
 import { DetalleCotizacionController } from "./features/detalle-cotizacion/controller/detalle-cotizacion.controller";
 import { AuthController } from "./features/auth/controller/auth.controller";
 
+import { AuthMiddleware } from "./shared/middlewares/auth.middleware";
+
 const app = createExpressServer({
   routePrefix: "/api",
   controllers: [
@@ -28,9 +30,10 @@ const app = createExpressServer({
     ProductoController,
     UsuarioController,
   ],
+  middlewares: [AuthMiddleware],
   cors: {
     origin: "*",
-    methods: ["GET", "POST","PATCH", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     credentials: true,
   },
 });
