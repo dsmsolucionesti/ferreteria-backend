@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Contacto</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #000 0%, #bc0b1a 100%);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            color: #333333;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            color: #666666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .data-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #bc0b1a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .data-box h3 {
+            color: #bc0b1a;
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        .data-row {
+            margin: 8px 0;
+            color: #555555;
+        }
+
+        .data-row strong {
+            color: #333333;
+            display: inline-block;
+            width: 150px;
+        }
+
+        .company-name {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .contact-info {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .logo-otto {
+            height: 200px;
+            width: auto;
+            object-fit: contain;
+            display: flex;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tu cotización ha sido generada</h1>
+        </div>
+
+        <div class="content">
+            <p class="greeting">Hola <strong>{{nombre}}</strong>,</p>
+
+            <p class="message">
+                Te informamos que tu cotización ha sido generada correctamente en nuestro sistema.
+                A continuación encontrarás el resumen de la información asociada.
+            </p>
+
+            <div class="data-box">
+                <h3>Datos de la cotización</h3>
+                <div class="data-row"><strong>Cliente:</strong> {{nombre}}</div>
+                <div class="data-row"><strong>RUT:</strong> {{rut}}</div>
+                <div class="data-row"><strong>N° Cotización:</strong> {{numeroCotizacion}}</div>
+            </div>
+
+            <p class="message">
+                En este correo encontrarás adjunto el documento de la cotización en formato PDF para tu revisión.
+                Si tienes alguna consulta o necesitas realizar modificaciones, no dudes en responder este correo o
+                contactarnos directamente.
+            </p>
+
+            <p class="message">
+                Muchas gracias por confiar en <strong>Ferreteria OTTO</strong>.
+            </p>
+
+            <div>
+                <img src="cid:logo" alt="Ferreteria OTTO" class="logo-otto">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

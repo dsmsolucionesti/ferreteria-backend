@@ -1,10 +1,19 @@
 import { ExpressMiddlewareInterface, Middleware } from "routing-controllers";
 import { verificarToken } from "../helper/auth.helper";
 
+
 @Middleware({ type: "before" })
 export class AuthMiddleware implements ExpressMiddlewareInterface {
   use(req: any, res: any, next: (err?: any) => any): any {
     const path = req.path;
+    if (
+      path.startsWith("/auth") ||
+      path.startsWith("/docs") ||
+      path === "/docs.json" ||
+      path.startsWith("/test")
+    ) {
+  return next();
+   }
 
     if (
       path.startsWith("/auth") ||
