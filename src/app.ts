@@ -16,6 +16,7 @@ import { UsuarioController } from "./features/usuario/controller/usuario.control
 import { DetalleCotizacionController } from "./features/detalle-cotizacion/controller/detalle-cotizacion.controller";
 import { AuthController } from "./features/auth/controller/auth.controller";
 import { EmailTestController } from "./test/email-test.controller";
+import { PdfTestController } from "./test/pdf-test.controller";
 
 import { AuthMiddleware } from "./shared/middlewares/auth.middleware";
 
@@ -31,6 +32,7 @@ const app = createExpressServer({
     ProductoController,
     UsuarioController,
     EmailTestController,
+    PdfTestController,
   ],
   middlewares: [AuthMiddleware],
   cors: {
