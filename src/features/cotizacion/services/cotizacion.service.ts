@@ -97,7 +97,7 @@ export class CotizacionService {
 
         const cabecera = {
           id_cliente: data.idCliente!,
-          id_usuario: data.isUsuario!,
+          id_usuario: data.idUsuario!,
         };
 
         await this._cotizacionRepository.update(id, cabecera, client);
