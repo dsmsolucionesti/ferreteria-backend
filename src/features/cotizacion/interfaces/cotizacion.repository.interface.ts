@@ -9,5 +9,5 @@ export interface CotizacionRepositoryInterface {
   post(data: Partial<CotizacionRequest>, client?: PoolClient): Promise<RespuestaProceso>;
   update(id: number, data: any, client?: PoolClient): Promise<RespuestaProceso>;
   delete(id: number, client?: PoolClient): Promise<RespuestaProceso>;
-  updateEstado(id: number, estado: number, client?: PoolClient): Promise<RespuestaProceso>;
+  updateEstado(id: number, data: any, client?: PoolClient): Promise<RespuestaProceso>;
 }

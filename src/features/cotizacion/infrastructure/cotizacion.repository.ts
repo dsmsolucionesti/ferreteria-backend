@@ -101,12 +101,16 @@ export class CotizacionRepository
         p.nombre as cotizaccion_detalle_nombre_producto,
         u.id as usuario_id,
         u.nombre as usuario_nombre,
-        ec.nombre as estado_cotizacion_nombre
+        ec.nombre as estado_cotizacion_nombre,
+        cl.nombre as cliente_nombre,
+        cl.rut as cliente_rut,
+        cl.email as cliente_email
         FROM cotizaciones c 
         FULL JOIN cotizacion_detalle cd on c.id = cd.id_cotizacion
         FULL JOIN productos p on cd.id_producto = p.id
         FULL JOIN usuarios u on u.id = c.id_usuario
         FULL JOIN estados_cotizacion ec on ec.id = c.id_estado
+        FULL JOIN clientes cl on cl.id = c.id_cliente
         WHERE c.id = $1
         ORDER BY cd.id ASC;
       `;
@@ -125,7 +129,12 @@ export class CotizacionRepository
       const cabecera = result[0];
       const cotizacion: any = {
         id: cabecera.id,
-        cliente_id: cabecera.id_cliente,
+        cliente: {
+          id: cabecera.id_cliente,
+          nombre: cabecera.cliente_nombre,
+          rut: cabecera.cliente_rut,
+          email: cabecera.cliente_email,
+        },
         fecha: cabecera.fecha,
         total: cabecera.total,
         estado: {
@@ -255,10 +264,19 @@ export class CotizacionRepository
       });
     }
   }
-  
-  async updateEstado(id: number, estado: number, client?: PoolClient): Promise<RespuestaProceso> {
+
+  async updateEstado(
+    id: number,
+    data: any,
+    client?: PoolClient,
+  ): Promise<RespuestaProceso> {
     try {
-      const rows = await this.updateEntity(this.tableName, { id_estado: estado }, id, client);
+      const rows = await this.updateEntity(
+        this.tableName,
+        { id_estado: data },
+        id,
+        client,
+      );
 
       if (rows.length === 0) {
         return new RespuestaProceso({

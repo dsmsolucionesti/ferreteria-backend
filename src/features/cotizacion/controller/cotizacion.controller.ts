@@ -56,8 +56,8 @@ export class CotizacionController {
   @HttpCode(200)
   async updateEstado(
     @Param("id") id: number,
-    @Body() body: { estado: number },
+    @Body() data: any,
   ): Promise<RespuestaProceso> {
-    return this.service.updateEstado(id, body.estado);
+    return this.service.updateEstado(id, data);
   }
 }

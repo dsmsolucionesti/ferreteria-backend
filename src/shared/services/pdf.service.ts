@@ -2,24 +2,7 @@ import PDFDocument from "pdfkit";
 import path from "path";
 import fs from "fs";
 
-interface ProductoCotizacion {
-  nombre: string;
-  cantidad: number;
-  precio: number;
-}
-
-interface CotizacionPDF {
-  numero: string | number;
-  fecha: string;
-  nombreCliente: string;
-  rut: string;
-  email: string;
-  productos: ProductoCotizacion[];
-  total: number;
-}
-
 export class PdfService {
-
   private readonly MARGIN = 50;
   private readonly FOOTER_HEIGHT = 35;
   private readonly SAFE_BOTTOM_MARGIN = 120;
@@ -40,7 +23,6 @@ export class PdfService {
   }
 
   private drawFooter(doc: PDFKit.PDFDocument, pageNumber: number) {
-
     const pageWidth = doc.page.width;
     const pageHeight = doc.page.height;
 
@@ -54,13 +36,11 @@ export class PdfService {
         `Ferretería OTTO - contacto@ferreteriaotto.cl | Página ${pageNumber}`,
         this.MARGIN,
         y - 10,
-        { align: "center", width: pageWidth - this.MARGIN * 2 }
+        { align: "center", width: pageWidth - this.MARGIN * 2 },
       );
-
   }
 
   private drawTableHeader(doc: PDFKit.PDFDocument, y: number) {
-
     doc
       .font("Helvetica-Bold")
       .fontSize(10)
@@ -78,21 +58,16 @@ export class PdfService {
       .stroke();
 
     return y + 10;
-
   }
 
-  async generarCotizacionPDF(cotizacion: CotizacionPDF): Promise<Buffer> {
-
+  async generarCotizacionPDF(cotizacion: any): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-
       const doc = new PDFDocument({
         margin: this.MARGIN,
-        size: "A4"
+        size: "A4",
       });
 
       const buffers: Buffer[] = [];
-
-      const docId = Math.random().toString(36).substring(2, 10);
 
       doc.on("data", buffers.push.bind(buffers));
       doc.on("end", () => resolve(Buffer.concat(buffers)));
@@ -102,29 +77,21 @@ export class PdfService {
 
       const pageHeight = doc.page.height;
 
-      const bottomLimit = () =>
-        pageHeight - this.SAFE_BOTTOM_MARGIN;
+      const bottomLimit = () => pageHeight - this.SAFE_BOTTOM_MARGIN;
 
       let y = 50;
 
       // ===== LOGO =====
-
       try {
-
         const logoPath = path.join(__dirname, "..", "img", "logo.png");
 
         if (fs.existsSync(logoPath)) {
           doc.image(logoPath, 50, 40, { width: 80 });
         }
-
       } catch {}
 
       // ===== EMPRESA =====
-
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(18)
-        .text("FERRETERÍA OTTO", 200, 50);
+      doc.font("Helvetica-Bold").fontSize(18).text("FERRETERÍA OTTO", 200, 50);
 
       doc
         .font("Helvetica")
@@ -135,78 +102,72 @@ export class PdfService {
       y = 120;
 
       // ===== COTIZACION =====
-
       doc
         .font("Helvetica-Bold")
         .fontSize(13)
-        .text(`Cotización N° ${this.sanitize(cotizacion.numero)}`, 50, y);
+        .text(`Cotización N° ${this.sanitize(cotizacion.id)}`, 50, y);
 
       doc
         .font("Helvetica")
         .fontSize(11)
-        .text(`Fecha: ${this.sanitize(cotizacion.fecha)}`, 400, y);
+        .text(`Fecha: ${new Date().toLocaleDateString("es-CL")}`, 400, y);
 
       y += 25;
 
-      doc.moveTo(50, y).lineTo(doc.page.width - 50, y).stroke();
+      doc
+        .moveTo(50, y)
+        .lineTo(doc.page.width - 50, y)
+        .stroke();
 
       y += 15;
 
       // ===== CLIENTE =====
-
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(10)
-        .text("DATOS DEL CLIENTE", 50, y);
+      doc.font("Helvetica-Bold").fontSize(10).text("DATOS DEL CLIENTE", 50, y);
 
       y += 15;
 
       doc
         .font("Helvetica")
         .fontSize(10)
-        .text(`Nombre: ${this.sanitize(cotizacion.nombreCliente)}`, 50, y)
-        .text(`RUT: ${this.sanitize(cotizacion.rut)}`, 50, y + 12)
-        .text(`Correo: ${this.sanitize(cotizacion.email)}`, 50, y + 24);
+        .text(`Nombre: ${this.sanitize(cotizacion.cliente.nombre)}`, 50, y)
+        .text(`RUT: ${this.sanitize(cotizacion.cliente.rut)}`, 50, y + 12)
+        .text(`Correo: ${this.sanitize(cotizacion.cliente.email)}`, 50, y + 24);
 
       y += 45;
 
-      doc.moveTo(50, y).lineTo(doc.page.width - 50, y).stroke();
+      doc
+        .moveTo(50, y)
+        .lineTo(doc.page.width - 50, y)
+        .stroke();
 
       y += 15;
 
       // ===== TABLA =====
-
       y = this.drawTableHeader(doc, y);
 
       let subtotal = 0;
 
-      const productos = Array.isArray(cotizacion.productos)
-        ? cotizacion.productos
+      const productos = Array.isArray(cotizacion.detalles)
+        ? cotizacion.detalles
         : [];
 
-      productos.forEach((producto) => {
-
-        const nombre = this.sanitize(producto.nombre).substring(0, 60);
+      productos.forEach((producto: any) => {
+        const nombre = this.sanitize(producto.nombre_producto).substring(0, 60);
 
         const cantidad = this.safeNumber(producto.cantidad);
-        const precio = this.safeNumber(producto.precio);
+        const precio = this.safeNumber(producto.precioUnitario);
+        const itemSubtotal = this.safeNumber(producto.subtotal);
 
-        const totalProducto = cantidad * precio;
-
-        subtotal += totalProducto;
+        subtotal += itemSubtotal; // ✅ ACUMULADOR CORRECTO
 
         if (y > bottomLimit()) {
-
           this.drawFooter(doc, pageNumber);
 
           doc.addPage();
-
           pageNumber++;
 
           y = 50;
-
           y = this.drawTableHeader(doc, y);
-
         }
 
         doc
@@ -215,7 +176,10 @@ export class PdfService {
           .text(nombre, 50, y, { width: 240 })
           .text(String(cantidad), 310, y, { width: 50, align: "right" })
           .text(this.formatMoney(precio), 370, y, { width: 80, align: "right" })
-          .text(this.formatMoney(totalProducto), 460, y, { width: 85, align: "right" });
+          .text(this.formatMoney(itemSubtotal), 460, y, {
+            width: 85,
+            align: "right",
+          });
 
         y += 20;
 
@@ -226,11 +190,9 @@ export class PdfService {
           .stroke();
 
         y += 5;
-
       });
 
       // ===== TOTALES =====
-
       const iva = Math.round(subtotal * 0.19);
       const total = subtotal + iva;
 
@@ -239,7 +201,10 @@ export class PdfService {
       doc.font("Helvetica").fontSize(10);
 
       doc.text("Subtotal:", 370, y, { width: 80, align: "right" });
-      doc.text(this.formatMoney(subtotal), 460, y, { width: 85, align: "right" });
+      doc.text(this.formatMoney(subtotal), 460, y, {
+        width: 85,
+        align: "right",
+      });
 
       y += 18;
 
@@ -267,17 +232,13 @@ export class PdfService {
         .font("Helvetica-Bold")
         .text("Gracias por preferir Ferretería OTTO", 50, y, {
           align: "center",
-          width: doc.page.width - 100
+          width: doc.page.width - 100,
         });
 
       // ===== FOOTER FINAL =====
-
       this.drawFooter(doc, pageNumber);
 
       doc.end();
-
     });
-
   }
-
 }

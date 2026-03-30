@@ -4,9 +4,11 @@ import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model
 import { executeInTransaction } from "../../../shared/helper/execute-in-transaction.helper";
 import { CotizacionRequest } from "../models/cotizacion-request.model";
 import { DetalleCotizacionRepository } from "../../detalle-cotizacion/infrastructure/detalle-cotizacion.repository";
+import { EmailService } from "../../../shared/services/email.service";
 
 export class CotizacionService {
   private _detalleCotizacionRepository = new DetalleCotizacionRepository();
+  private _emailService = new EmailService();
 
   constructor(
     private readonly _cotizacionRepository: CotizacionRepositoryInterface,
@@ -155,10 +157,20 @@ export class CotizacionService {
     return deleted;
   }
 
-  async updateEstado(id: number, estado: number): Promise<RespuestaProceso> {
+  async updateEstado(id: number, data: any): Promise<RespuestaProceso> {
     try {
       return await executeInTransaction(async (client) => {
-        await this._cotizacionRepository.updateEstado(id, estado, client);
+        const result = await this._cotizacionRepository.updateEstado(
+          id,
+          data.nuevo_estado,
+          client,
+        );
+
+        if (result.idEstado !== 0) {
+          throw new Error(result.dsEstado);
+        }
+
+        this._emailService.sendEmail(data);
 
         return new RespuestaProceso({
           idEstado: 0,
