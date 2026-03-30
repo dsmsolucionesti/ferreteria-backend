@@ -11,7 +11,10 @@ export class ClienteRepository
 
   async findAll(): Promise<RespuestaProceso<Cliente[]>> {
     try {
-      const result = await this.selectEntity<Cliente[]>(this.tableName, "nombre");
+      const result = await this.selectEntity<Cliente[]>(
+        this.tableName,
+        "nombre",
+      );
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -55,6 +58,43 @@ export class ClienteRepository
         dsEstado: "OK",
         totalRegistros: 1,
         datos: [result[0]],
+      });
+    } catch (error) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "Error",
+        mensaje: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  async searchClientes(query: string): Promise<RespuestaProceso<Cliente[]>> {
+    try {
+      const result = await this.query<Cliente[]>(
+        `
+      SELECT *
+      FROM ${this.tableName}
+      WHERE LOWER(nombre) LIKE LOWER($1)
+         OR rut LIKE $1
+      ORDER BY nombre ASC
+      LIMIT 10
+      `,
+        [`%${query}%`],
+      );
+
+      if (!result || result.length === 0) {
+        return new RespuestaProceso({
+          idEstado: 1,
+          dsEstado: "Sin registros",
+          totalRegistros: 0,
+          datos: [],
+        });
+      }
+
+      return new RespuestaProceso<Cliente[]>({
+        idEstado: 0,
+        dsEstado: "OK",
+        totalRegistros: result.length,
+        datos: result,
       });
     } catch (error) {
       return new RespuestaProceso({

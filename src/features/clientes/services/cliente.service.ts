@@ -15,6 +15,10 @@ export class ClienteService {
     return await this._clienteRepository.findById(id);
   }
 
+  async searchClientes(query: string): Promise<RespuestaProceso> {
+    return await this._clienteRepository.searchClientes(query);
+  }
+
   async post(data: Partial<Cliente>): Promise<RespuestaProceso> {
     return await this._clienteRepository.post(data);
   }
