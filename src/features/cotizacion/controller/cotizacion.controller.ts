@@ -31,7 +31,9 @@ export class CotizacionController {
 
   @Post("/")
   @HttpCode(201)
-  async create(@Body() data: Partial<CotizacionRequest>): Promise<RespuestaProceso> {
+  async create(
+    @Body() data: Partial<CotizacionRequest>,
+  ): Promise<RespuestaProceso> {
     return this.service.post(data);
   }
 
@@ -48,5 +50,14 @@ export class CotizacionController {
   @HttpCode(200)
   async delete(@Param("id") id: number): Promise<RespuestaProceso> {
     return this.service.delete(id);
+  }
+
+  @Patch("/:id/estado")
+  @HttpCode(200)
+  async updateEstado(
+    @Param("id") id: number,
+    @Body() body: { estado: number },
+  ): Promise<RespuestaProceso> {
+    return this.service.updateEstado(id, body.estado);
   }
 }

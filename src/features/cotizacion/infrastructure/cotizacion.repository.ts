@@ -100,11 +100,13 @@ export class CotizacionRepository
         cd.subtotal as cotizacion_subtotal,
         p.nombre as cotizaccion_detalle_nombre_producto,
         u.id as usuario_id,
-        u.nombre as usuario_nombre
+        u.nombre as usuario_nombre,
+        ec.nombre as estado_cotizacion_nombre
         FROM cotizaciones c 
         FULL JOIN cotizacion_detalle cd on c.id = cd.id_cotizacion
         FULL JOIN productos p on cd.id_producto = p.id
         FULL JOIN usuarios u on u.id = c.id_usuario
+        FULL JOIN estados_cotizacion ec on ec.id = c.id_estado
         WHERE c.id = $1
         ORDER BY cd.id ASC;
       `;
@@ -126,7 +128,10 @@ export class CotizacionRepository
         cliente_id: cabecera.id_cliente,
         fecha: cabecera.fecha,
         total: cabecera.total,
-        estado: cabecera.estado,
+        estado: {
+          id: cabecera.id_estado,
+          nombre: cabecera.estado_cotizacion_nombre,
+        },
         usuario: {
           id: cabecera.usuario_id,
           nombre: cabecera.usuario_nombre,
@@ -226,6 +231,34 @@ export class CotizacionRepository
   async delete(id: number, client?: PoolClient): Promise<RespuestaProceso> {
     try {
       const rows = await this.deleteEntity(this.tableName, id, client);
+
+      if (rows.length === 0) {
+        return new RespuestaProceso({
+          idEstado: 1,
+          dsEstado: "Sin registros",
+          totalRegistros: 0,
+          datos: [],
+        });
+      }
+
+      return new RespuestaProceso({
+        idEstado: 0,
+        dsEstado: "OK",
+        totalRegistros: rows.length,
+        datos: rows,
+      });
+    } catch (error) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "Error",
+        mensaje: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  
+  async updateEstado(id: number, estado: number, client?: PoolClient): Promise<RespuestaProceso> {
+    try {
+      const rows = await this.updateEntity(this.tableName, { id_estado: estado }, id, client);
 
       if (rows.length === 0) {
         return new RespuestaProceso({

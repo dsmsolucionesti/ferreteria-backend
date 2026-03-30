@@ -108,11 +108,8 @@ export class CotizacionService {
         let total = 0;
 
         for (const det of data.cotizacionDetalle || []) {
-          console.log({ det });
           const productoId = det.id_producto;
           const precio = det.precioUnitario;
-
-          console.log({ productoId, precio });
 
           if (!productoId || precio == null) {
             throw new Error("Detalle inválido");
@@ -156,6 +153,25 @@ export class CotizacionService {
     }
 
     return deleted;
+  }
+
+  async updateEstado(id: number, estado: number): Promise<RespuestaProceso> {
+    try {
+      return await executeInTransaction(async (client) => {
+        await this._cotizacionRepository.updateEstado(id, estado, client);
+
+        return new RespuestaProceso({
+          idEstado: 0,
+          dsEstado: "Cotización actualizada correctamente",
+        });
+      });
+    } catch (error) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "Error",
+        mensaje: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 
   private crearRespuestaError(mensaje: string): RespuestaProceso {
