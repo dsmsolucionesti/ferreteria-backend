@@ -28,6 +28,7 @@ export class CotizacionRepository
       LEFT JOIN clientes cl ON c.id_cliente = cl.id 
       LEFT JOIN usuarios u on c.id_usuario = u.id 
       LEFT JOIN estados_cotizacion ec on c.id_estado = ec.id
+      ORDER BY c.id ASC;
     `;
 
       const result = await this.query<any>(query);
@@ -42,7 +43,15 @@ export class CotizacionRepository
       }
 
       const data = result.map((p) => {
-        const { cliente_id, cliente_nombre, usuario_id, usuario_nombre, estado_cotizacion_id, estado_cotizacion_nombre, ...cotizacion } = p;
+        const {
+          cliente_id,
+          cliente_nombre,
+          usuario_id,
+          usuario_nombre,
+          estado_cotizacion_id,
+          estado_cotizacion_nombre,
+          ...cotizacion
+        } = p;
 
         return {
           ...cotizacion,
@@ -81,11 +90,26 @@ export class CotizacionRepository
     client?: PoolClient,
   ): Promise<RespuestaProceso<Cotizacion>> {
     try {
-      const result = await this.selectEntityById<Cotizacion>(
-        this.tableName,
-        id,
-        client,
-      );
+      const query = `
+      SELECT 
+        c.*,
+        cd.id as cotizacion_detalle_id,
+        cd.id_producto as cotizaccion_detalle_id_producto,
+        cd.cantidad as cotizacion_cantidad,
+        cd.precio_unitario as cotizacion_precio_unitario,
+        cd.subtotal as cotizacion_subtotal,
+        p.nombre as cotizaccion_detalle_nombre_producto,
+        u.id as usuario_id,
+        u.nombre as usuario_nombre
+        FROM cotizaciones c 
+        FULL JOIN cotizacion_detalle cd on c.id = cd.id_cotizacion
+        FULL JOIN productos p on cd.id_producto = p.id
+        FULL JOIN usuarios u on u.id = c.id_usuario
+        WHERE c.id = $1
+        ORDER BY cd.id ASC;
+      `;
+
+      const result = await this.query<any>(query, [id], client);
 
       if (!result[0]) {
         return new RespuestaProceso({
@@ -96,11 +120,38 @@ export class CotizacionRepository
         });
       }
 
+      const cabecera = result[0];
+      const cotizacion: any = {
+        id: cabecera.id,
+        cliente_id: cabecera.id_cliente,
+        fecha: cabecera.fecha,
+        total: cabecera.total,
+        estado: cabecera.estado,
+        usuario: {
+          id: cabecera.usuario_id,
+          nombre: cabecera.usuario_nombre,
+        },
+        detalles: [],
+      };
+
+      result.forEach((c) => {
+        if (!c.cotizacion_detalle_id) return;
+
+        cotizacion.detalles.push({
+          id: c.cotizacion_detalle_id,
+          id_producto: c.cotizaccion_detalle_id_producto,
+          nombre_producto: c.cotizaccion_detalle_nombre_producto,
+          cantidad: c.cotizacion_cantidad,
+          precioUnitario: c.cotizacion_precio_unitario,
+          subtotal: c.cotizacion_subtotal,
+        });
+      });
+
       return new RespuestaProceso({
         idEstado: 0,
         dsEstado: "OK",
         totalRegistros: 1,
-        datos: [result[0]],
+        datos: cotizacion,
       });
     } catch (error) {
       return new RespuestaProceso({
@@ -143,7 +194,7 @@ export class CotizacionRepository
 
   async update(
     id: number,
-    data: Partial<Cotizacion>,
+    data: any,
     client?: PoolClient,
   ): Promise<RespuestaProceso> {
     try {

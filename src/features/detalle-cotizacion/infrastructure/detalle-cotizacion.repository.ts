@@ -220,4 +220,16 @@ export class DetalleCotizacionRepository
       });
     }
   }
+
+  async deleteByCotizacionId(
+    idCotizacion: number,
+    client?: PoolClient,
+  ): Promise<void> {
+    const query = `
+    DELETE FROM cotizacion_detalle
+    WHERE id_cotizacion = $1
+  `;
+
+    await this.query(query, [idCotizacion], client);
+  }
 }

@@ -80,14 +80,73 @@ export class CotizacionService {
     }
   }
 
-  async update(
-    id: number,
-    data: Partial<Cotizacion>,
-  ): Promise<RespuestaProceso> {
-    if (id === 0) {
+  async update(id: number, data: any): Promise<RespuestaProceso> {
+    if (!id || id === 0) {
       return this.crearRespuestaError("ID de cotización no válido");
     }
-    return await this._cotizacionRepository.update(id, data);
+
+    try {
+      return await executeInTransaction(async (client) => {
+        const existe = await this._cotizacionRepository.findById(id, client);
+
+        if (!existe.datos) {
+          throw new Error("Cotización no existe");
+        }
+
+        const cabecera = {
+          id_cliente: data.idCliente!,
+          id_usuario: data.isUsuario!,
+        };
+
+        await this._cotizacionRepository.update(id, cabecera, client);
+
+        await this._detalleCotizacionRepository.deleteByCotizacionId(
+          id,
+          client,
+        );
+
+        let total = 0;
+
+        for (const det of data.cotizacionDetalle || []) {
+          console.log({ det });
+          const productoId = det.id_producto;
+          const precio = det.precioUnitario;
+
+          console.log({ productoId, precio });
+
+          if (!productoId || precio == null) {
+            throw new Error("Detalle inválido");
+          }
+
+          const subtotal = det.cantidad * precio;
+          total += subtotal;
+
+          await this._detalleCotizacionRepository.post(
+            {
+              idCotizacion: id,
+              idProducto: productoId,
+              cantidad: det.cantidad,
+              precioUnitario: precio,
+              subtotal,
+            },
+            client,
+          );
+        }
+
+        await this._cotizacionRepository.update(id, { total }, client);
+
+        return new RespuestaProceso({
+          idEstado: 0,
+          dsEstado: "Cotización actualizada correctamente",
+        });
+      });
+    } catch (error) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "Error",
+        mensaje: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 
   async delete(id: number): Promise<RespuestaProceso> {

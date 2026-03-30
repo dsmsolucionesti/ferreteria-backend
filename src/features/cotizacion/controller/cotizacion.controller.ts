@@ -39,7 +39,7 @@ export class CotizacionController {
   @HttpCode(200)
   async update(
     @Param("id") id: number,
-    @Body() data: Partial<Cotizacion>,
+    @Body() data: Partial<CotizacionRequest>,
   ): Promise<RespuestaProceso> {
     return this.service.update(id, data);
   }
