@@ -20,6 +20,7 @@ export class EmailTestController {
       productos: [
         { nombre: "Martillo", cantidad: 2, precio: 5000 },
         { nombre: "Clavos", cantidad: 1, precio: 3000 },
+         
         
 
       ],

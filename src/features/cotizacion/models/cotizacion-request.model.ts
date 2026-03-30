@@ -1,6 +1,6 @@
 export interface CotizacionRequest {
   idCliente: number;
-  isUsuario: number;
+  idUsuario: number;
   cotizacionDetalle: {
     idProducto: {
       id: number;

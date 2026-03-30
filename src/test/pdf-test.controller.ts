@@ -11,10 +11,12 @@ export class PdfTestController {
 
     const cotizacion = {
       numero: 123,
+      fecha: new Date().toLocaleDateString("es-CL", {
+        timeZone: "America/Santiago"
+      }),
       nombreCliente: "Juan Pérez",
       rut: "12.345.678-9",
       email: "cliente@email.cl",
-      fecha: "20-04-2026",
       productos: [
         { nombre: "Martillo", cantidad: 2, precio: 5000 },
         { nombre: "Clavos", cantidad: 1, precio: 3000 }
@@ -25,7 +27,10 @@ export class PdfTestController {
     const pdfBuffer = await pdfService.generarCotizacionPDF(cotizacion);
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=cotizacion.pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=cotizacion-${cotizacion.numero}.pdf`
+    );
 
     return res.send(pdfBuffer);
 
