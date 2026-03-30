@@ -11,7 +11,7 @@ export class ClienteRepository
 
   async findAll(): Promise<RespuestaProceso<Cliente[]>> {
     try {
-      const result = await this.selectEntity<Cliente[]>(this.tableName);
+      const result = await this.selectEntity<Cliente[]>(this.tableName, "nombre");
 
       if (!result[0]) {
         return new RespuestaProceso({

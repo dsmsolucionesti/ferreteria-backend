@@ -7,6 +7,7 @@ import {
   Delete,
   Patch,
   HttpCode,
+  Req,
 } from "routing-controllers";
 import { Cotizacion } from "../models/cotizacion.model";
 import { RespuestaProceso } from "../../../shared/models/respuesta-proceso.model";
@@ -59,5 +60,21 @@ export class CotizacionController {
     @Body() data: any,
   ): Promise<RespuestaProceso> {
     return this.service.updateEstado(id, data);
+  }
+
+  @Post("/vencer")
+  @HttpCode(200)
+  async validaCotizacionesVencidas(@Req() req: any): Promise<RespuestaProceso> {
+    const apiKey = req.headers["x-api-key"];
+
+    if (apiKey !== process.env.CRON_SECRET) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "ERROR",
+        mensaje: "No autorizado",
+      });
+    }
+
+    return this.service.vencerCotizaciones();
   }
 }

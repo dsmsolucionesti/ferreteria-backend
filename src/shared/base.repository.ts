@@ -20,9 +20,10 @@ export class BaseRepository {
 
   protected async selectEntity<T>(
     table: string,
+    order: string = "id",
     client?: PoolClient,
   ): Promise<T[]> {
-    const query = `SELECT * FROM ${table}`;
+    const query = `SELECT * FROM ${table} ORDER BY ${order} asc`;
     return this.query<T>(query, undefined, client);
   }
 

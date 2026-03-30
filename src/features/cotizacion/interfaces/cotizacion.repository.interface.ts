@@ -10,4 +10,5 @@ export interface CotizacionRepositoryInterface {
   update(id: number, data: any, client?: PoolClient): Promise<RespuestaProceso>;
   delete(id: number, client?: PoolClient): Promise<RespuestaProceso>;
   updateEstado(id: number, data: any, client?: PoolClient): Promise<RespuestaProceso>;
+  vencerCotizaciones(client?: PoolClient): Promise<number>;
 }

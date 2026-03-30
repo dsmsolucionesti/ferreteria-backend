@@ -301,4 +301,25 @@ export class CotizacionRepository
       });
     }
   }
+
+  async vencerCotizaciones(client?: PoolClient): Promise<number> {
+    try {
+      const result = await this.query(
+        `
+      UPDATE ${this.tableName}
+      SET id_estado = 5
+      WHERE id_estado = 2
+        AND fecha_actualizacion IS NOT NULL
+        AND fecha_actualizacion + INTERVAL '7 days' <= NOW()
+      RETURNING id
+      `,
+        [],
+        client,
+      );
+
+      return result.length;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

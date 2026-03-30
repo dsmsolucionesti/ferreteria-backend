@@ -186,6 +186,32 @@ export class CotizacionService {
     }
   }
 
+  async vencerCotizaciones(): Promise<RespuestaProceso> {
+    try {
+      const actualizadas =
+        await this._cotizacionRepository.vencerCotizaciones();
+
+      return new RespuestaProceso({
+        idEstado: 0,
+        dsEstado: "OK",
+        totalRegistros: actualizadas,
+        mensaje:
+          actualizadas > 0
+            ? "Cotizaciones vencidas actualizadas"
+            : "No hay cotizaciones para vencer",
+        datos: [],
+      });
+    } catch (error) {
+      console.error(error);
+
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "ERROR",
+        mensaje: "Error al procesar cotizaciones vencidas",
+      });
+    }
+  }
+
   private crearRespuestaError(mensaje: string): RespuestaProceso {
     return new RespuestaProceso({
       idEstado: -1,

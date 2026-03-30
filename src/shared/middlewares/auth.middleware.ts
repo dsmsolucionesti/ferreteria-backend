@@ -10,7 +10,8 @@ export class AuthMiddleware implements ExpressMiddlewareInterface {
       path.startsWith("/auth") ||
       path.startsWith("/docs") ||
       path === "/docs.json" ||
-      path.startsWith("/test")
+      path.startsWith("/test") ||
+      path.startsWith("/cotizaciones/vencer")
     ) {
   return next();
    }

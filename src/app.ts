@@ -1,4 +1,8 @@
 import "reflect-metadata";
+
+// 🔥 CRON CONTROLADO POR ENV
+require("./shared/helper/cron");
+
 import {
   createExpressServer,
   getMetadataArgsStorage,
@@ -7,6 +11,7 @@ import { routingControllersToSpec } from "routing-controllers-openapi";
 
 import swaggerUi from "swagger-ui-express";
 
+// Controllers
 import { ActiveSysController } from "./features/active-sys/active-sys.routes";
 import { CategoriaController } from "./features/categoria/controller/categoria.controller";
 import { ClienteController } from "./features/clientes/controller/cliente.controller";
@@ -15,9 +20,12 @@ import { ProductoController } from "./features/producto/controller/producto.cont
 import { UsuarioController } from "./features/usuario/controller/usuario.controller";
 import { DetalleCotizacionController } from "./features/detalle-cotizacion/controller/detalle-cotizacion.controller";
 import { AuthController } from "./features/auth/controller/auth.controller";
+
+// Test controllers
 import { EmailTestController } from "./test/email-test.controller";
 import { PdfTestController } from "./test/pdf-test.controller";
 
+// Middlewares
 import { AuthMiddleware } from "./shared/middlewares/auth.middleware";
 
 const app = createExpressServer({
@@ -42,6 +50,7 @@ const app = createExpressServer({
   },
 });
 
+// Swagger
 const storage = getMetadataArgsStorage();
 
 const spec = routingControllersToSpec(
