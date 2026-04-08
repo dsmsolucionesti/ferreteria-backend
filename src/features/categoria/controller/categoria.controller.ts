@@ -8,6 +8,7 @@ import {
   Delete,
   Patch,
   HttpCode,
+  QueryParam,
 } from "routing-controllers";
 import { buildCategoriaService } from "../categoria.factory";
 import { Categoria } from "../models/categoria.model";
@@ -29,6 +30,14 @@ export class CategoriaController {
     return this.service.findById(id);
   }
 
+  @Get("/buscar/:query")
+  @HttpCode(200)
+  async searchCategorias(
+    @QueryParam("query") query: string,
+  ): Promise<RespuestaProceso> {
+    return this.service.searchCategorias(query);
+  }
+
   @Post("/")
   @HttpCode(201)
   async create(@Body() data: Partial<Categoria>): Promise<RespuestaProceso> {
@@ -37,7 +46,10 @@ export class CategoriaController {
 
   @Patch("/:id")
   @HttpCode(200)
-  async update(@Param("id") id: number, @Body() data: Partial<Categoria>): Promise<RespuestaProceso> {
+  async update(
+    @Param("id") id: number,
+    @Body() data: Partial<Categoria>,
+  ): Promise<RespuestaProceso> {
     return this.service.update(id, data);
   }
 

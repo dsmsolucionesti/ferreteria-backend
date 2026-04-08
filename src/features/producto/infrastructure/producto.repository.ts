@@ -94,6 +94,43 @@ export class ProductoRepository
     }
   }
 
+  async searchProductos(query: string): Promise<RespuestaProceso<Producto[]>> {
+    try {
+      const result = await this.query<Producto[]>(
+        `
+          SELECT *
+          FROM ${this.tableName}
+          WHERE LOWER(nombre) LIKE LOWER($1)
+          ORDER BY nombre ASC
+          LIMIT 10
+          `,
+        [`%${query}%`],
+      );
+
+      if (!result || result.length === 0) {
+        return new RespuestaProceso({
+          idEstado: 1,
+          dsEstado: "Sin registros",
+          totalRegistros: 0,
+          datos: [],
+        });
+      }
+
+      return new RespuestaProceso<Producto[]>({
+        idEstado: 0,
+        dsEstado: "OK",
+        totalRegistros: result.length,
+        datos: result,
+      });
+    } catch (error) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "Error",
+        mensaje: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
   async post(data: Partial<Producto>): Promise<RespuestaProceso> {
     try {
       const result = await this.insertEntity(this.tableName, data);
@@ -121,10 +158,7 @@ export class ProductoRepository
     }
   }
 
-  async update(
-    id: number,
-    data: Partial<Producto>,
-  ): Promise<RespuestaProceso> {
+  async update(id: number, data: Partial<Producto>): Promise<RespuestaProceso> {
     try {
       const result = await this.updateEntity(this.tableName, data, id);
 

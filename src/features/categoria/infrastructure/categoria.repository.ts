@@ -14,7 +14,6 @@ export class CategoriaRepository
   extends BaseRepository
   implements CategoriaRepositoryInterface
 {
-
   private readonly tableName = "categorias";
 
   async findAll(): Promise<RespuestaProceso<Categoria[]>> {
@@ -65,6 +64,43 @@ export class CategoriaRepository
         dsEstado: "OK",
         totalRegistros: 1,
         datos: [result[0]],
+      });
+    } catch (error) {
+      return new RespuestaProceso({
+        idEstado: -1,
+        dsEstado: "Error",
+        mensaje: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  async searchCategorias(query: string): Promise<RespuestaProceso<Categoria[]>> {
+    try {
+      const result = await this.query<Categoria[]>(
+        `
+        SELECT *
+        FROM ${this.tableName}
+        WHERE LOWER(nombre) LIKE LOWER($1)
+        ORDER BY nombre ASC
+        LIMIT 10
+        `,
+        [`%${query}%`],
+      );
+
+      if (!result || result.length === 0) {
+        return new RespuestaProceso({
+          idEstado: 1,
+          dsEstado: "Sin registros",
+          totalRegistros: 0,
+          datos: [],
+        });
+      }
+
+      return new RespuestaProceso<Categoria[]>({
+        idEstado: 0,
+        dsEstado: "OK",
+        totalRegistros: result.length,
+        datos: result,
       });
     } catch (error) {
       return new RespuestaProceso({

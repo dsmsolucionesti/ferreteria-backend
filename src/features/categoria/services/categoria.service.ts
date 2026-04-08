@@ -15,6 +15,10 @@ export class CategoriaService {
     return await this._categoriaRepository.findById(id);
   }
 
+  async searchCategorias(query: string): Promise<RespuestaProceso> {
+    return await this._categoriaRepository.searchCategorias(query);
+  }
+
   async post(data: Partial<Categoria>): Promise<RespuestaProceso> {
     return await this._categoriaRepository.post(data);
   }

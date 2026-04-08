@@ -15,14 +15,15 @@ export class ProductoService {
     return await this._productoRepository.findById(id);
   }
 
+  async searchProductos(query: string): Promise<RespuestaProceso> {
+    return await this._productoRepository.searchProductos(query);
+  }
+
   async post(data: Partial<Producto>): Promise<RespuestaProceso> {
     return await this._productoRepository.post(data);
   }
 
-  async update(
-    id: number,
-    data: Partial<Producto>,
-  ): Promise<RespuestaProceso> {
+  async update(id: number, data: Partial<Producto>): Promise<RespuestaProceso> {
     if (id === 0) {
       return this.crearRespuestaError("ID de categoría no válido");
     }

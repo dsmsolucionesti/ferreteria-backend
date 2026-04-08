@@ -8,6 +8,7 @@ import {
   Delete,
   Patch,
   HttpCode,
+  QueryParam,
 } from "routing-controllers";
 import { buildProductoService } from "../producto.factory";
 import { Producto } from "../model/producto.model";
@@ -27,6 +28,14 @@ export class ProductoController {
   @HttpCode(200)
   async findById(@Param("id") id: number): Promise<RespuestaProceso> {
     return this.service.findById(id);
+  }
+
+  @Get("/buscar/:query")
+  @HttpCode(200)
+  async searchCategorias(
+    @QueryParam("query") query: string,
+  ): Promise<RespuestaProceso> {
+    return this.service.searchProductos(query);
   }
 
   @Post("/")
